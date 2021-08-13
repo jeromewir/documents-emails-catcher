@@ -2,7 +2,7 @@
 ## Build
 ##
 
-FROM golang:1.16-buster AS build
+FROM golang:1.16-buster AS builder
 
 WORKDIR /app
 
@@ -10,9 +10,10 @@ COPY go.mod ./
 COPY go.sum ./
 RUN go mod download
 
-COPY **/*.go ./
+COPY . .
 
-RUN go build -o /invoices-fwder
+RUN go build -o /app/invoices-fwder
+RUN chmod +x /app/invoices-fwder
 
 ##
 ## Deploy
@@ -20,12 +21,10 @@ RUN go build -o /invoices-fwder
 
 FROM gcr.io/distroless/base-debian10
 
-WORKDIR /
-
-COPY --from=build /invoices-fwder /invoices-fwder
+COPY --from=builder /app/invoices-fwder /app/invoices-fwder
 
 EXPOSE 8080
 
 USER nonroot:nonroot
 
-ENTRYPOINT ["/invoices-fwder"]
+ENTRYPOINT ["/app/invoices-fwder"]
