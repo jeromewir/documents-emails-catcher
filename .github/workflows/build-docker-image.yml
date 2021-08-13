@@ -1,0 +1,19 @@
+name: Build docker image
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: mr-smithers-excellent/docker-build-push@b74f2665a4a826412bdb4c355deb6fdc2e80d42b
+        with:
+          image: documents-emails-catcher
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
